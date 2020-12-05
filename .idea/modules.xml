@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SkinSense.iml" filepath="$PROJECT_DIR$/SkinSense.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SkinSense.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SkinSense.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

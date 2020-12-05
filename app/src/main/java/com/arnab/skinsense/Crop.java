@@ -16,15 +16,8 @@ import com.lyft.android.scissors.CropView;
 import java.io.FileInputStream;
 
 public class Crop extends AppCompatActivity {
-    private static final int INPUT_SIZE = 299;
-    private static final int IMAGE_MEAN = 128;
-    private static final float IMAGE_STD = 128;
-    private static final String INPUT_NAME = "Mul";
-    private static final String OUTPUT_NAME = "final_result";
 
-    private static final String MODEL_FILE = "file:///android_asset/tensorflow_inception_graph.pb";
-    private static final String LABEL_FILE =
-            "file:///android_asset/imagenet_comp_graph_label_strings.txt";
+    private static final int INPUT_SIZE = 224;
 
     CropView cropView;
     Bitmap bitmap;

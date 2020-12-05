@@ -1,4 +1,5 @@
 package com.arnab.skinsense;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private CameraView cameraView;
     private ProgressDialog pd;
     private ImageView alertimg;
+    private TfModel tfModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,10 +163,20 @@ public class MainActivity extends AppCompatActivity {
         {
             Bitmap bitmap=data.getParcelableExtra("croppedBitmap");
             imageViewResult.setImageBitmap(bitmap);
+
             //alertimg = findViewById(R.id.img);
             //alertimg.setImageBitmap(bitmap);
             //alertimg.invalidate();
-            final List<Classifier.Recognition> results = classifier.recognizeImage(bitmap);
+
+            // test patient data for PAT_1790_3425_942.png
+            // TODO:  need UI to collect, standardize metadata
+            float[] metaData = new float[]{
+                    0.f, 0.f, 0.41124412f,  0.f, 0.f, 1.f,
+                    1.f,1.f, -0.28738758f, 5.f, -0.17573152f, -0.11812692f,
+                    1.f, 0.f, 0.f, 0.f, 0.f, 1.f
+            };
+
+            float[] results = this.tfModel.run(this, bitmap, metaData );
 
             //alertimg.setImageBitmap(bitmap);
             //AlertView alert = new AlertView(MainActivity.this);
@@ -177,7 +189,36 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(this, ""+alertimg, Toast.LENGTH_SHORT).show();
             //alertimg.setImageBitmap(bitmap);
             TextView text = (TextView) dialog.findViewById(R.id.text_dialog);
-            text.setText(results.toString());
+            // text.setText(results.toString());
+
+            // Compose output text
+            StringBuffer sb = new StringBuffer();
+
+            sb.append("Binary - cancer probability: ");
+            sb.append(String.valueOf(results[0]));
+
+            sb.append("\n\nCategorical probability (non-cancerous):");
+            sb.append("\nACK: ");
+            sb.append(String.valueOf(results[1]));
+
+            sb.append("\nNEV: ");
+            sb.append(String.valueOf(results[2]));
+
+            sb.append("\nSEK: ");
+            sb.append(String.valueOf(results[3]));
+
+            sb.append("\n\nCategorical probability (cancerous):");
+            sb.append("\nBCC: ");
+            sb.append(String.valueOf(results[4]));
+
+            sb.append("\nSCC: ");
+            sb.append(String.valueOf(results[5]));
+
+            sb.append("\nMEL: ");
+            sb.append(String.valueOf(results[6]));
+
+            text.setText( sb.toString() );
+
             Button dialogButton = (Button) dialog.findViewById(R.id.btn_dialog);
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -208,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(results.toString());
             builder.setView(dialoglayout);
             builder.show();*/
+            /*
             offlinestore offline=new offlinestore();
             String bit=offline.BitMapToString(bitmap);
             UserData ud = new UserData(results.toString(),bit);
@@ -215,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
             Hawk.put(FirebaseAuth.getInstance().getCurrentUser().getEmail(),ListHolder.list);
             if(Hawk.contains(FirebaseAuth.getInstance().getCurrentUser().getEmail()))
             Toast.makeText(this,Hawk.get(FirebaseAuth.getInstance().getCurrentUser().getEmail()).toString(), Toast.LENGTH_SHORT).show();
+             */
         }
     }
     @Override
@@ -241,10 +284,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTensorFlowAndLoadModel() {
+
+        final Activity activity = this;
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
+
+                    tfModel= new TfModel( activity );
+
+                    /*
                     classifier = TensorFlowImageClassifier.create(
                             getAssets(),
                             MODEL_FILE,
@@ -254,7 +304,11 @@ public class MainActivity extends AppCompatActivity {
                             IMAGE_STD,
                             INPUT_NAME,
                             OUTPUT_NAME);
+                     */
                     makeButtonVisible();
+
+                    //tfModel.run(activity );
+
                 } catch (final Exception e) {
                     throw new RuntimeException("Error initializing TensorFlow!", e);
                 }
